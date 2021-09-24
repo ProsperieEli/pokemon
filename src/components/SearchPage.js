@@ -5,7 +5,8 @@ export default class SearchPage extends Component {
     state = {
         searchPokemon: '',
         sortPokemon: '',
-        pokemonArray: []
+        pokemonArray: [],
+        loading: false
        
     }
 
@@ -21,8 +22,13 @@ export default class SearchPage extends Component {
       this.fetchPokemon()
     }
     fetchPokemon = async () =>{
-        const response = await request.get(`https://pokedex-alchemy.herokuapp.com/api/pokedex?pokemon=${this.state.searchPokemon}&sort=direction=desc${this.state.sortPokemon}`)
-        this.setState({pokemonArray: response.body.results })
+        this.setState({loading: true})
+        const response = await request.get(`https://pokedex-alchemy.herokuapp.com/api/pokedex?pokemon=${this.state.searchPokemon}&sort=pokemon&direction=${this.state.sortPokemon}&perPage=all`)
+        this.setState({
+            pokemonArray: response.body.results, 
+            loading:false
+        })
+        
     }
     findPokemon = async (e) => {
         this.setState({searchPokemon: e.target.value})
@@ -35,15 +41,20 @@ export default class SearchPage extends Component {
        console.log(this.state.searchPokemon);
         return (
             <div>
+
                 <form onSubmit={this.submitPokemon}>
-                    <select>
-                        <option value="">ASC</option>
+                    <select onChange={this.sortPokemon}>
+                        <option value="asc">ASC</option>
                         <option value="desc">DSC</option>
                         </select>
                     <input onChange={this.searchPokemon}/>
                     <button>Find Your Pokemon!!</button>
                 </form>
-                <PokeList pokeArray = {this.state.pokemonArray}/>
+                {this.state.loading
+                ? <img src='https://cdn.dribbble.com/users/621155/screenshots/2835314/simple_pokeball.gif' alt='pokemon' />
+                :
+               <PokeList pokeArray = {this.state.pokemonArray}/>
+    }  
             </div>
         )
     }
