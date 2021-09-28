@@ -5,7 +5,7 @@ export default class PokeItem extends Component {
         return (
          <li>
             
-             <Link to={`/Pokemon/${this.props._id}`}>
+             <Link to={`/Pokemon/${this.props.id}`}>
              <img src={this.props.image} alt={this.props.name}></img>
              </Link>
              {this.props.name}

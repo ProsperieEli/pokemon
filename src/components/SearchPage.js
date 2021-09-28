@@ -6,7 +6,8 @@ export default class SearchPage extends Component {
         searchPokemon: '',
         sortPokemon: '',
         pokemonArray: [],
-        loading: false
+        loading: false,
+        page: 1
        
     }
 
@@ -23,12 +24,23 @@ export default class SearchPage extends Component {
     }
     fetchPokemon = async () =>{
         this.setState({loading: true})
-        const response = await request.get(`https://pokedex-alchemy.herokuapp.com/api/pokedex?pokemon=${this.state.searchPokemon}&sort=pokemon&direction=${this.state.sortPokemon}&perPage=all`)
+        const response = await request.get(`https://pokedex-alchemy.herokuapp.com/api/pokedex?pokemon=${this.state.searchPokemon}&sort=pokemon&direction=${this.state.sortPokemon}&page=${this.state.page}&perPage=20`)
         this.setState({
             pokemonArray: response.body.results, 
             loading:false
         })
+
         
+    }
+    ascendUpwards = async () => {
+        await this.setState({page: this.state.page + 1})
+         this.fetchPokemon()
+    }
+
+    ascendingDownwards = async () => {
+        await this.setState({page: this.state.page - 1 })
+      this.fetchPokemon()
+
     }
     findPokemon = async (e) => {
         this.setState({searchPokemon: e.target.value})
@@ -50,6 +62,8 @@ export default class SearchPage extends Component {
                     <input onChange={this.searchPokemon}/>
                     <button>Find Your Pokemon!!</button>
                 </form>
+                <button onClick={this.ascendUpwards}>Up</button>
+                {this.state.page !==1 ? <button onClick={this.ascendingDownwards}>Down</button> :null}
                 {this.state.loading
                 ? <img src='https://cdn.dribbble.com/users/621155/screenshots/2835314/simple_pokeball.gif' alt='pokemon' />
                 :
